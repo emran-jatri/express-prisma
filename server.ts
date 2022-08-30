@@ -51,6 +51,54 @@ app.delete('/user/:id', async (req, res) => {
   return res.status(200).json(user)
 })
 
+
+app.post('/users', async (req, res) => {
+	const user = await prisma.user.create({
+		data: {
+			email: req.body.email,
+			name: req.body.name,
+		}
+	})
+	console.log('user created: ', user)
+	res.status(200).json(user)
+})
+
+// class Paginate{
+// 	skip: number
+// 	take: number
+
+// 	constructor() {
+// 		this.skip = 0
+// 		this.take = 10
+// 	}
+// }
+
+const paginate = (modelName: string, args: any) => {
+	let model = modelName.toLowerCase()
+	if (!model) {
+		throw new Error('Model name not found!')
+	}
+	let skip: any = args.page || 0
+	let take: any = args.limit || 10
+	
+	if (+skip > 1) {
+		skip = (+skip - 1) * +take
+	}
+	
+	else {
+		skip = 0
+	}
+	take = +take
+	console.log({ skip, take })
+	return prisma[model].findMany({ skip, take })
+}
+
+app.get('/users', async (req, res) => {
+	
+	console.log(prisma['user'])
+	res.status(200).json("kljasdf")
+})
+
 const port = process.env.PORT || 5000
 const server = app.listen(port)
 
